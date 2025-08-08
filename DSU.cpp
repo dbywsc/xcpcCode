@@ -14,6 +14,6 @@ struct DSU {
         p[pb] = pa;
         siz[pa] += siz[pb];
     }
-    bool same(int u, int v) return {find(u) == find(v)};
-    int size(int u) {return siz[find(u)]};
+    bool same(int u, int v) {return find(u) == find(v);}
+    int size(int u) {return siz[find(u)];}
 };
