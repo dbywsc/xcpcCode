@@ -1,3 +1,4 @@
+//本模板下标从0开始
 struct Info {
     i64 sum;
     int len;
