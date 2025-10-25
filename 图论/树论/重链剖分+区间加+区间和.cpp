@@ -1,4 +1,5 @@
 std::vector<int> dfn, son, p, dep, seg, siz, top;
+int cntd;
 
 struct SegTree {
     const int INF = 1e9;
