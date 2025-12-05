@@ -11,6 +11,7 @@ struct SegmentTree {
         }
         int mid = (l + r) / 2;
         build(p * 2, l, mid, a); build(p * 2 + 1, mid + 1, r, a);
+        pull(p);
     }
     void build(std::vector<i64> a) {
         build(1, 1, n, a);
@@ -41,7 +42,7 @@ struct SegmentTree {
         maxn[p] = std::max(maxn[p * 2], maxn[p * 2 + 1]);
     }
     void rangeMul(int p, int l, int r, int x, int y, i64 v) {
-        if(r < x || y > y) return;
+        if(r < x || l > y) return;
         if(l >= x && r <= y) {
             applyMul(p, v);
             return;
@@ -68,19 +69,19 @@ struct SegmentTree {
         pull(p);
     }
     void rangeAdd(int x, int y, i64 v) {
-        return rangeAdd(1, 1, n, x, y, v);
+        rangeAdd(1, 1, n, x, y, v);
     }
     i64 queryMax(int p, int l, int r, int x, int y) {
         if(r < x || l > y) return LLONG_MIN;
         if(l >= x && r <= y) return maxn[p];
         push(p, l, r);
         int mid = (l + r) / 2;
-        return std::max(queryMax(p * 2, l, mid, l, y), queryMax(p * 2 + 1, mid + 1, r, x, y));
+        return std::max(queryMax(p * 2, l, mid, x, y), queryMax(p * 2 + 1, mid + 1, r, x, y));
     }
     i64 queryMax(int x, int y) {
         return queryMax(1, 1, n, x, y);
     }
-    int querySum(int p, int l, int r, int x, int y) {
+    i64 querySum(int p, int l, int r, int x, int y) {
         if(r < x || l > y) return 0;
         if(l >= x && r <= y) return sum[p];
         push(p, l, r);
