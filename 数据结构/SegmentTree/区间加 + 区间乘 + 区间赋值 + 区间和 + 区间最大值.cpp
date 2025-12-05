@@ -1,7 +1,8 @@
 struct SegmentTree {
     int n;
-    std::vector<i64> sum, maxn, mul, add;
-    SegmentTree(int n_): n(n_), sum(4 * n + 1, 0), maxn(4 * n + 1, 0), mul(4 * n + 1, 1), add(4 * n + 1, 0) {}
+    std::vector<i64> sum, maxn, mul, add, setVal;
+    std::vector<int> setFlag;
+    SegmentTree(int n_): n(n_), sum(4 * n + 1, 0), maxn(4 * n + 1, 0), mul(4 * n + 1, 1), add(4 * n + 1, 0), setFlag(4 * n + 1), setVal(4 * n + 1) {}
     void build(int p, int l, int r, std::vector<i64> &a) {
         mul[p] = 1;
         add[p] = 0;
@@ -27,15 +28,32 @@ struct SegmentTree {
         maxn[p] += v;
         add[p] += v;
     }
-    void push(int p, int l, int r) {
-        if(mul[p] == 1 && add[p] == 0) return;
-        int mid = (l + r) / 2;
-        applyMul(p * 2, mul[p]);
-        applyMul(p * 2 + 1, mul[p]);
-        applyAdd(p * 2, add[p], mid - l + 1);
-        applyAdd(p * 2 + 1, add[p], r - mid);
+    void applySet(int p, i64 v, int len) {
+        sum[p] = v * len;
+        maxn[p] = v;
+        setFlag[p] = true;
+        setVal[p] = v;
         mul[p] = 1;
         add[p] = 0;
+    }
+    void push(int p, int l, int r) {
+        if(l == r) return;
+        int mid = (l + r) / 2;
+        if(setFlag[p]) {
+            applySet(p * 2, setVal[p], mid - l + 1);
+            applySet(p * 2 + 1, setVal[p], r - mid);
+            setFlag[p] = 0;
+        }
+        if(mul[p] != 1) {
+            applyMul(p * 2, mul[p]);
+            applyMul(p * 2 + 1, mul[p]);
+            mul[p] = 1;
+        }
+        if(add[p] != 0) {
+            applyAdd(p * 2, add[p], mid - l + 1);
+            applyAdd(p * 2 + 1, add[p], r - mid);
+            add[p] = 0;
+        }
     }
     void pull(int p) {
         sum[p] = sum[p * 2] + sum[p * 2 + 1];
@@ -70,6 +88,21 @@ struct SegmentTree {
     }
     void rangeAdd(int x, int y, i64 v) {
         rangeAdd(1, 1, n, x, y, v);
+    }
+    void rangeSet(int p, int l, int r, int x, int y, i64 v) {
+        if(r < x || l > y) return;
+        if(l >= x && r <= y) {
+            applySet(p, v, r - l + 1);
+            return;
+        }
+        push(p, l, r);
+        int mid = (l + r) / 2;
+        rangeSet(p * 2, l, mid, x, y, v);
+        rangeSet(p * 2 + 1, mid + 1, r, x, y, v);
+        pull(p);
+    }
+    void rangeSet(int x, int y, i64 v) {
+        rangeSet(1, 1, n, x, y, v);
     }
     i64 queryMax(int p, int l, int r, int x, int y) {
         if(r < x || l > y) return LLONG_MIN;
