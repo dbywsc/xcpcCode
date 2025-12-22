@@ -56,8 +56,8 @@ struct SegTree {
         push(o, l, r);
         int m = (l + r) / 2;
         int res = 0;
-        if(x <= m) res ^= query(o, l, m, x, y);
-        if(y > m) res ^= query(o, m + 1, r, x, y);
+        if(x <= m) res ^= query(o * 2, l, m, x, y);
+        if(y > m) res ^= query(o * 2 + 1, m + 1, r, x, y);
         return res;
     }
     int query(int x, int y) {
