@@ -2,11 +2,11 @@ struct Combination {
     std::vector<i64> fact, invfact;
     Combination(int n) : fact(n + 1), invfact(n + 1) {
         fact[0] = 1;
-        for (int i = 1; i <= n; ++i) {
+        for (int i = 1; i <= n; i++) {
             fact[i] = fact[i - 1] * i % P;
         }
         invfact[n] = qpow(fact[n], P - 2);
-        for (int i = n - 1; i >= 0; --i) {
+        for (int i = n - 1; i >= 0; i--) {
             invfact[i] = invfact[i + 1] * (i + 1) % P;
         }
     }
